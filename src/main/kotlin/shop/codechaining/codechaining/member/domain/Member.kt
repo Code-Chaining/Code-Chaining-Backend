@@ -6,7 +6,7 @@ import jakarta.persistence.*
 class Member(
     val email: String,
 
-    var name: String,
+    val name: String,
 
     val picture: String,
 
