@@ -38,7 +38,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // security
-//    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     compileOnly("org.projectlombok:lombok")
@@ -47,6 +46,12 @@ dependencies {
 
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+tasks {
+    named<Jar>("jar") {
+        enabled = false
+    }
 }
 
 tasks.withType<KotlinCompile> {
