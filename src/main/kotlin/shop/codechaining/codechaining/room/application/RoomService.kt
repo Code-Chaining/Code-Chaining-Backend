@@ -9,6 +9,7 @@ import shop.codechaining.codechaining.room.api.request.RoomUpdateReqDto
 import shop.codechaining.codechaining.room.api.response.*
 import shop.codechaining.codechaining.room.domain.Room
 import shop.codechaining.codechaining.room.domain.repository.RoomRepository
+import shop.codechaining.codechaining.room.exception.RoomNotFoundException
 
 @Service
 @Transactional(readOnly = true)
@@ -30,7 +31,7 @@ class RoomService(
     }
 
     fun roomInfo(roomId: Long): RoomInfoResDto {
-        val room = roomRepository.findById(roomId).orElseThrow()
+        val room = roomRepository.findById(roomId).orElseThrow { RoomNotFoundException() }
 
         return RoomInfoResDto.from(
             title = room.title,
