@@ -16,9 +16,7 @@ class RoomController(
     private val roomService: RoomService
 ) {
     @PostMapping("/")
-    fun roomSave(
-        @RequestBody roomSaveReqDto: RoomSaveReqDto
-    ): RspTemplate<String> {
+    fun roomSave(@RequestBody roomSaveReqDto: RoomSaveReqDto): RspTemplate<String> {
         roomService.roomSave("email", roomSaveReqDto)
         return RspTemplate(HttpStatus.CREATED, "토론 방 생성")
     }
@@ -26,12 +24,11 @@ class RoomController(
     @PutMapping("/{roomId}")
     fun roomUpdate(@PathVariable roomId: Long, @RequestBody roomUpdateReqDto: RoomUpdateReqDto): RspTemplate<String> {
         roomService.roomUpdate("email", roomId, roomUpdateReqDto)
-
         return RspTemplate(HttpStatus.OK, "토론 방 수정")
     }
 
-    @GetMapping("/info")
-    fun roomInfo(@RequestParam roomId: Long): RspTemplate<RoomInfoResDto> {
+    @GetMapping("/{roomId}")
+    fun roomInfo(@PathVariable roomId: Long): RspTemplate<RoomInfoResDto> {
         val roomInfo = roomService.roomInfo(roomId)
         return RspTemplate(HttpStatus.OK, "토론 방 정보", roomInfo)
     }
@@ -46,5 +43,11 @@ class RoomController(
     fun publicRooms(): RspTemplate<PublicRoomsResDto> {
         val publicRooms = roomService.publicRooms("email")
         return RspTemplate(HttpStatus.OK, "공개 토론 방", publicRooms)
+    }
+
+    @DeleteMapping("/{roomId}")
+    fun roomDelete(@PathVariable roomId: Long): RspTemplate<String> {
+        roomService.deleteMyRoom("email", roomId)
+        return RspTemplate(HttpStatus.OK, "토론 방 삭제")
     }
 }

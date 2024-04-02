@@ -23,6 +23,8 @@ class Comment(
     @Column(name = "comment_id", nullable = false)
     val commentId: Long? = null
 ) {
-
+    fun updateComment(contents: String) {
+        this.contents = contents
+    }
 
 }
