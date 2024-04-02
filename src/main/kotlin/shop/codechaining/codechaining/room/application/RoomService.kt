@@ -9,6 +9,7 @@ import shop.codechaining.codechaining.room.api.request.RoomUpdateReqDto
 import shop.codechaining.codechaining.room.api.response.*
 import shop.codechaining.codechaining.room.domain.Room
 import shop.codechaining.codechaining.room.domain.repository.RoomRepository
+import shop.codechaining.codechaining.room.exception.NotRoomOwnerException
 import shop.codechaining.codechaining.room.exception.RoomNotFoundException
 
 @Service
@@ -25,7 +26,12 @@ class RoomService(
 
     @Transactional
     fun roomUpdate(email: String, roomId: Long, roomUpdateReqDto: RoomUpdateReqDto) {
-        val room = roomRepository.findById(roomId).orElseThrow()
+        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
+        val room = roomRepository.findById(roomId).orElseThrow { RoomNotFoundException() }
+
+        if (room.member.memberId != member.memberId) {
+            throw NotRoomOwnerException()
+        }
 
         room.updateRoom(roomUpdateReqDto.title, roomUpdateReqDto.codeAndContents)
     }
@@ -58,6 +64,19 @@ class RoomService(
                 room.member.nickname
             )
         })
+    }
+
+    // 댓글이 있다면 지우기
+    @Transactional
+    fun deleteMyRoom(email: String, roomId: Long) {
+        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
+        val room = roomRepository.findById(roomId).orElseThrow { RoomNotFoundException() }
+
+        if (room.member.memberId != member.memberId) {
+            throw NotRoomOwnerException()
+        }
+
+        roomRepository.delete(room)
     }
 
 }
