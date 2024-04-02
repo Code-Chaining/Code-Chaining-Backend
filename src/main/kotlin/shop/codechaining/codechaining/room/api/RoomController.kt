@@ -24,7 +24,6 @@ class RoomController(
     @PutMapping("/{roomId}")
     fun roomUpdate(@PathVariable roomId: Long, @RequestBody roomUpdateReqDto: RoomUpdateReqDto): RspTemplate<String> {
         roomService.roomUpdate("email", roomId, roomUpdateReqDto)
-
         return RspTemplate(HttpStatus.OK, "토론 방 수정")
     }
 
