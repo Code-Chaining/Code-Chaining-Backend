@@ -5,8 +5,9 @@ import org.springframework.web.bind.annotation.*
 import shop.codechaining.codechaining.global.template.RspTemplate
 import shop.codechaining.codechaining.room.api.request.RoomSaveReqDto
 import shop.codechaining.codechaining.room.api.request.RoomUpdateReqDto
+import shop.codechaining.codechaining.room.api.response.MyRoomsResDto
+import shop.codechaining.codechaining.room.api.response.PublicRoomsResDto
 import shop.codechaining.codechaining.room.api.response.RoomInfoResDto
-import shop.codechaining.codechaining.room.api.response.RoomsResDto
 import shop.codechaining.codechaining.room.application.RoomService
 
 @RestController
@@ -36,8 +37,14 @@ class RoomController(
     }
 
     @GetMapping("/my")
-    fun myRooms(): RspTemplate<RoomsResDto> {
+    fun myRooms(): RspTemplate<MyRoomsResDto> {
         val myRooms = roomService.myRooms("email")
         return RspTemplate(HttpStatus.OK, "내 토론 방", myRooms)
+    }
+
+    @GetMapping("/public")
+    fun publicRooms(): RspTemplate<PublicRoomsResDto> {
+        val publicRooms = roomService.publicRooms("email")
+        return RspTemplate(HttpStatus.OK, "공개 토론 방", publicRooms)
     }
 }

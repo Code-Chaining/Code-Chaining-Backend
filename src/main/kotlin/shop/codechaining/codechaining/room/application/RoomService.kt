@@ -5,9 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import shop.codechaining.codechaining.member.domain.repository.MemberRepository
 import shop.codechaining.codechaining.room.api.request.RoomSaveReqDto
 import shop.codechaining.codechaining.room.api.request.RoomUpdateReqDto
-import shop.codechaining.codechaining.room.api.response.RoomInfoResDto
-import shop.codechaining.codechaining.room.api.response.RoomResDto
-import shop.codechaining.codechaining.room.api.response.RoomsResDto
+import shop.codechaining.codechaining.room.api.response.*
 import shop.codechaining.codechaining.room.domain.Room
 import shop.codechaining.codechaining.room.domain.repository.RoomRepository
 
@@ -33,18 +31,31 @@ class RoomService(
     fun roomInfo(roomId: Long): RoomInfoResDto {
         val room = roomRepository.findById(roomId).orElseThrow()
 
-        return RoomInfoResDto(
+        return RoomInfoResDto.from(
             title = room.title,
             codeAndContents = room.codeAndContents,
             date = room.date
         )
     }
 
-    fun myRooms(email: String): RoomsResDto {
+    fun myRooms(email: String): MyRoomsResDto {
         val member = memberRepository.findByEmail(email).orElseThrow()
         val myRoomList = roomRepository.findAllByMember(member)
 
-        return RoomsResDto(myRoomList.map { room: Room -> RoomResDto(room.roomId, room.title) })
+        return MyRoomsResDto(myRoomList.map { room: Room -> MyRoomResDto(room.roomId, room.title) })
+    }
+
+    fun publicRooms(email: String): PublicRoomsResDto {
+        val member = memberRepository.findByEmail(email).orElseThrow()
+        val publicRoomList = roomRepository.findAll()
+
+        return PublicRoomsResDto(publicRoomList.map { room: Room ->
+            PublicRoomResDto(
+                room.roomId,
+                room.title,
+                room.member.nickname
+            )
+        })
     }
 
 }
