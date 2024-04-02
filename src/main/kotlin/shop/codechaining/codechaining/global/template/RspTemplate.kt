@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus
 
 data class RspTemplate<T>(
     var statusCode: HttpStatus,
-    var message: String,
+    var message: String? = null,
     var data: T? = null
 )
