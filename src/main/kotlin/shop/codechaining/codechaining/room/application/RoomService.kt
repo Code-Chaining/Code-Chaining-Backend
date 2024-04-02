@@ -3,11 +3,13 @@ package shop.codechaining.codechaining.room.application
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import shop.codechaining.codechaining.member.domain.repository.MemberRepository
+import shop.codechaining.codechaining.member.exception.MemberNotFoundException
 import shop.codechaining.codechaining.room.api.request.RoomSaveReqDto
 import shop.codechaining.codechaining.room.api.request.RoomUpdateReqDto
 import shop.codechaining.codechaining.room.api.response.*
 import shop.codechaining.codechaining.room.domain.Room
 import shop.codechaining.codechaining.room.domain.repository.RoomRepository
+import shop.codechaining.codechaining.room.exception.RoomNotFoundException
 
 @Service
 @Transactional(readOnly = true)
@@ -17,7 +19,7 @@ class RoomService(
 ) {
     @Transactional
     fun roomSave(email: String, roomSaveReqDto: RoomSaveReqDto) {
-        val member = memberRepository.findByEmail(email).orElseThrow()
+        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
         roomRepository.save(Room(roomSaveReqDto.title, roomSaveReqDto.codeAndContents, member = member))
     }
 
@@ -29,7 +31,7 @@ class RoomService(
     }
 
     fun roomInfo(roomId: Long): RoomInfoResDto {
-        val room = roomRepository.findById(roomId).orElseThrow()
+        val room = roomRepository.findById(roomId).orElseThrow { RoomNotFoundException() }
 
         return RoomInfoResDto.from(
             title = room.title,
@@ -39,14 +41,14 @@ class RoomService(
     }
 
     fun myRooms(email: String): MyRoomsResDto {
-        val member = memberRepository.findByEmail(email).orElseThrow()
+        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
         val myRoomList = roomRepository.findAllByMember(member)
 
         return MyRoomsResDto(myRoomList.map { room: Room -> MyRoomResDto(room.roomId, room.title) })
     }
 
     fun publicRooms(email: String): PublicRoomsResDto {
-        val member = memberRepository.findByEmail(email).orElseThrow()
+        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
         val publicRoomList = roomRepository.findAll()
 
         return PublicRoomsResDto(publicRoomList.map { room: Room ->
