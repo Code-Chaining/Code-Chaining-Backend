@@ -7,13 +7,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import shop.codechaining.codechaining.global.jwt.JwtAuthorizationFilter
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
+    private val jwtAuthorizationFilter: JwtAuthorizationFilter
 ) {
     @Bean
     @Throws(Exception::class)
@@ -22,13 +25,17 @@ class SecurityConfig(
             csrf { disable() }
             cors { configurationSource = configureCors() }
             authorizeHttpRequests {
-                authorize("/**", permitAll)
-
+                authorize("/api/kakao/token", permitAll)
+                authorize("/api/token/access", permitAll)
+                authorize("/api/room/public", permitAll)
+                authorize("/**", authenticated)
             }
             sessionManagement {
                 SessionCreationPolicy.STATELESS
             }
         }
+
+        http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }

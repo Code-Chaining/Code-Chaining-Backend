@@ -5,9 +5,8 @@ import jakarta.persistence.*
 @Entity
 class Member(
     val email: String,
-    val name: String,
+    val nickname: String,
     val picture: String,
-    var nickname: String,
     @Enumerated(EnumType.STRING)
     val role: Role,
     @Id
@@ -15,8 +14,5 @@ class Member(
     @Column(name = "member_id")
     val memberId: Long? = null
 ) {
-    fun updateNickname(nickname: String) {
-        this.nickname = nickname
-    }
 
 }
