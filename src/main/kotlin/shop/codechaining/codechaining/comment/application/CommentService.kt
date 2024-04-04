@@ -38,7 +38,7 @@ class CommentService(
             CommentResDto(
                 comment.commentId,
                 comment.writer.memberId,
-                comment.writer.name,
+                comment.writer.nickname,
                 comment.contents
             )
         })

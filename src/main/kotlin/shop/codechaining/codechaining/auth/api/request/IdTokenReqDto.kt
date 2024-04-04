@@ -1,5 +1,5 @@
 package shop.codechaining.codechaining.auth.api.request
 
-data class TokenReqDto(
+data class IdTokenReqDto(
     val idToken: String
 )
