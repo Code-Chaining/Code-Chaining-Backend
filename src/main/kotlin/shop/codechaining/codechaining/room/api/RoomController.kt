@@ -1,6 +1,7 @@
 package shop.codechaining.codechaining.room.api
 
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import shop.codechaining.codechaining.global.template.RspTemplate
 import shop.codechaining.codechaining.room.api.request.RoomSaveReqDto
@@ -16,14 +17,14 @@ class RoomController(
     private val roomService: RoomService
 ) {
     @PostMapping("/")
-    fun roomSave(@RequestBody roomSaveReqDto: RoomSaveReqDto): RspTemplate<String> {
-        roomService.roomSave("email", roomSaveReqDto)
+    fun roomSave(@AuthenticationPrincipal email: String, @RequestBody roomSaveReqDto: RoomSaveReqDto): RspTemplate<String> {
+        roomService.roomSave(email, roomSaveReqDto)
         return RspTemplate(HttpStatus.CREATED, "토론 방 생성")
     }
 
     @PutMapping("/{roomId}")
-    fun roomUpdate(@PathVariable roomId: Long, @RequestBody roomUpdateReqDto: RoomUpdateReqDto): RspTemplate<String> {
-        roomService.roomUpdate("email", roomId, roomUpdateReqDto)
+    fun roomUpdate(@AuthenticationPrincipal email: String,@PathVariable roomId: Long, @RequestBody roomUpdateReqDto: RoomUpdateReqDto): RspTemplate<String> {
+        roomService.roomUpdate(email, roomId, roomUpdateReqDto)
         return RspTemplate(HttpStatus.OK, "토론 방 수정")
     }
 
@@ -34,20 +35,20 @@ class RoomController(
     }
 
     @GetMapping("/my")
-    fun myRooms(): RspTemplate<MyRoomsResDto> {
-        val myRooms = roomService.myRooms("email")
+    fun myRooms(@AuthenticationPrincipal email: String): RspTemplate<MyRoomsResDto> {
+        val myRooms = roomService.myRooms(email)
         return RspTemplate(HttpStatus.OK, "내 토론 방", myRooms)
     }
 
     @GetMapping("/public")
     fun publicRooms(): RspTemplate<PublicRoomsResDto> {
-        val publicRooms = roomService.publicRooms("email")
+        val publicRooms = roomService.publicRooms()
         return RspTemplate(HttpStatus.OK, "공개 토론 방", publicRooms)
     }
 
     @DeleteMapping("/{roomId}")
-    fun roomDelete(@PathVariable roomId: Long): RspTemplate<String> {
-        roomService.deleteMyRoom("email", roomId)
+    fun roomDelete(@AuthenticationPrincipal email: String, @PathVariable roomId: Long): RspTemplate<String> {
+        roomService.deleteMyRoom(email, roomId)
         return RspTemplate(HttpStatus.OK, "토론 방 삭제")
     }
 }

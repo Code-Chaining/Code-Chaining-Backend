@@ -53,8 +53,7 @@ class RoomService(
         return MyRoomsResDto(myRoomList.map { room: Room -> MyRoomResDto(room.roomId, room.title) })
     }
 
-    fun publicRooms(email: String): PublicRoomsResDto {
-        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
+    fun publicRooms(): PublicRoomsResDto {
         val publicRoomList = roomRepository.findAll()
 
         return PublicRoomsResDto(publicRoomList.map { room: Room ->
