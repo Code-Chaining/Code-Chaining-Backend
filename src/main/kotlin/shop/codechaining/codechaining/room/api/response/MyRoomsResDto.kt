@@ -7,5 +7,5 @@ data class MyRoomsResDto(
 data class MyRoomResDto(
     val roomId: Long?,
     val title: String,
-//    val commentCount: Int
+    val commentCount: Int
 )
