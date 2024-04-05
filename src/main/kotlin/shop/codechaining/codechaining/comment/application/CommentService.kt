@@ -39,6 +39,7 @@ class CommentService(
                 comment.commentId,
                 comment.writer.memberId,
                 comment.writer.nickname,
+                comment.writer.picture,
                 comment.contents
             )
         })

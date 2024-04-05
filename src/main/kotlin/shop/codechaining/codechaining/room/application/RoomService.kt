@@ -2,6 +2,7 @@ package shop.codechaining.codechaining.room.application
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import shop.codechaining.codechaining.comment.domain.repository.CommentRepository
 import shop.codechaining.codechaining.member.domain.repository.MemberRepository
 import shop.codechaining.codechaining.member.exception.MemberNotFoundException
 import shop.codechaining.codechaining.room.api.request.RoomSaveReqDto
@@ -16,7 +17,8 @@ import shop.codechaining.codechaining.room.exception.RoomNotFoundException
 @Transactional(readOnly = true)
 class RoomService(
     private val roomRepository: RoomRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val commentRepository: CommentRepository
 ) {
     @Transactional
     fun roomSave(email: String, roomSaveReqDto: RoomSaveReqDto) {
@@ -36,21 +38,30 @@ class RoomService(
         room.updateRoom(roomUpdateReqDto.title, roomUpdateReqDto.codeAndContents)
     }
 
-    fun roomInfo(roomId: Long): RoomInfoResDto {
+    fun roomInfo(roomId: Long): RoomInfoResDto? {
         val room = roomRepository.findById(roomId).orElseThrow { RoomNotFoundException() }
 
-        return RoomInfoResDto.from(
-            title = room.title,
-            codeAndContents = room.codeAndContents,
-            date = room.date
-        )
+        return room.member.memberId?.let {
+            RoomInfoResDto.from(
+                title = room.title,
+                codeAndContents = room.codeAndContents,
+                date = room.date,
+                memberId = it
+            )
+        }
     }
 
     fun myRooms(email: String): MyRoomsResDto {
         val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
         val myRoomList = roomRepository.findAllByMember(member)
 
-        return MyRoomsResDto(myRoomList.map { room: Room -> MyRoomResDto(room.roomId, room.title) })
+        return MyRoomsResDto(myRoomList.map { room: Room ->
+            MyRoomResDto(
+                room.roomId,
+                room.title,
+                commentRepository.countByRoom(room)
+            )
+        })
     }
 
     fun publicRooms(): PublicRoomsResDto {
@@ -60,7 +71,8 @@ class RoomService(
             PublicRoomResDto(
                 room.roomId,
                 room.title,
-                room.member.nickname
+                room.member.nickname,
+                commentRepository.countByRoom(room)
             )
         })
     }
@@ -75,6 +87,7 @@ class RoomService(
             throw NotRoomOwnerException()
         }
 
+        commentRepository.deleteAllByRoom(room)
         roomRepository.delete(room)
     }
 

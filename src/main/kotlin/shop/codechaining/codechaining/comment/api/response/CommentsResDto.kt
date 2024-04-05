@@ -7,6 +7,7 @@ data class CommentsResDto(
 data class CommentResDto(
     val commentId: Long?,
     val memberId: Long?,
-    val name: String,
+    val nickname: String,
+    val picture: String,
     val contents: String
 )

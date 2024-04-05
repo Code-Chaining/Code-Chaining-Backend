@@ -6,4 +6,6 @@ import shop.codechaining.codechaining.room.domain.Room
 
 interface CommentRepository : JpaRepository<Comment, Long> {
     fun findByRoom(room: Room): List<Comment>
+    fun countByRoom(room: Room): Int
+    fun deleteAllByRoom(room: Room)
 }
