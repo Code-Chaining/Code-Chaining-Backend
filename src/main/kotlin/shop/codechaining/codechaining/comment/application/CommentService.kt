@@ -23,11 +23,18 @@ class CommentService(
     private val roomRepository: RoomRepository
 ) {
     @Transactional
-    fun commentSave(email: String, commentSaveReqDto: CommentSaveReqDto) {
+    fun commentSave(email: String, commentSaveReqDto: CommentSaveReqDto): CommentResDto {
         val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
         val room = roomRepository.findById(commentSaveReqDto.roomId).orElseThrow { RoomNotFoundException() }
 
-        commentRepository.save(Comment(commentSaveReqDto.contents, writer = member, room = room))
+        val comment = commentRepository.save(Comment(commentSaveReqDto.contents, writer = member, room = room))
+        return CommentResDto(
+            comment.commentId,
+            comment.writer.memberId,
+            comment.writer.nickname,
+            comment.writer.picture,
+            comment.contents
+        )
     }
 
     fun roomComments(roomId: Long): CommentsResDto {

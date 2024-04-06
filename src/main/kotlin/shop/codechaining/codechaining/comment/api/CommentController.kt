@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import shop.codechaining.codechaining.comment.api.request.CommentSaveReqDto
 import shop.codechaining.codechaining.comment.api.request.CommentUpdateReqDto
+import shop.codechaining.codechaining.comment.api.response.CommentResDto
 import shop.codechaining.codechaining.comment.api.response.CommentsResDto
 import shop.codechaining.codechaining.comment.application.CommentService
 import shop.codechaining.codechaining.global.template.RspTemplate
@@ -16,9 +17,12 @@ class CommentController(
 ) {
 
     @PostMapping("/")
-    fun commentSave(@AuthenticationPrincipal email: String, @RequestBody commentSaveReqDto: CommentSaveReqDto): RspTemplate<String> {
-        commentService.commentSave(email, commentSaveReqDto)
-        return RspTemplate(HttpStatus.CREATED, "댓글 작성")
+    fun commentSave(
+        @AuthenticationPrincipal email: String,
+        @RequestBody commentSaveReqDto: CommentSaveReqDto
+    ): RspTemplate<CommentResDto> {
+        val comment = commentService.commentSave(email, commentSaveReqDto)
+        return RspTemplate(HttpStatus.CREATED, "댓글 작성", comment)
     }
 
     @GetMapping("/{roomId}")
