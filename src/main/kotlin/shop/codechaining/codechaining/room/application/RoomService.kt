@@ -46,7 +46,9 @@ class RoomService(
                 title = room.title,
                 codeAndContents = room.codeAndContents,
                 date = room.date,
-                memberId = it
+                memberId = it,
+                nickname = room.member.nickname,
+                picture = room.member.picture
             )
         }
     }
