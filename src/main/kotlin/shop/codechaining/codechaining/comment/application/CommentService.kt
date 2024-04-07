@@ -28,12 +28,13 @@ class CommentService(
         val room = roomRepository.findById(commentSaveReqDto.roomId).orElseThrow { RoomNotFoundException() }
 
         val comment = commentRepository.save(Comment(commentSaveReqDto.contents, writer = member, room = room))
-        return CommentResDto(
+        return CommentResDto.from(
             comment.commentId,
             comment.writer.memberId,
             comment.writer.nickname,
             comment.writer.picture,
-            comment.contents
+            comment.contents,
+            comment.date
         )
     }
 
@@ -42,12 +43,13 @@ class CommentService(
         val comments = commentRepository.findByRoom(room)
 
         return CommentsResDto(comments.map { comment: Comment ->
-            CommentResDto(
+            CommentResDto.from(
                 comment.commentId,
                 comment.writer.memberId,
                 comment.writer.nickname,
                 comment.writer.picture,
-                comment.contents
+                comment.contents,
+                comment.date
             )
         })
     }

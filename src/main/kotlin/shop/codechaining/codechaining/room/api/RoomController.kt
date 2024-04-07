@@ -1,5 +1,6 @@
 package shop.codechaining.codechaining.room.api
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -17,13 +18,20 @@ class RoomController(
     private val roomService: RoomService
 ) {
     @PostMapping("/")
-    fun roomSave(@AuthenticationPrincipal email: String, @RequestBody roomSaveReqDto: RoomSaveReqDto): RspTemplate<String> {
+    fun roomSave(
+        @AuthenticationPrincipal email: String,
+        @RequestBody @Valid roomSaveReqDto: RoomSaveReqDto
+    ): RspTemplate<String> {
         roomService.roomSave(email, roomSaveReqDto)
         return RspTemplate(HttpStatus.CREATED, "토론 방 생성")
     }
 
     @PutMapping("/{roomId}")
-    fun roomUpdate(@AuthenticationPrincipal email: String,@PathVariable roomId: Long, @RequestBody roomUpdateReqDto: RoomUpdateReqDto): RspTemplate<String> {
+    fun roomUpdate(
+        @AuthenticationPrincipal email: String,
+        @PathVariable roomId: Long,
+        @RequestBody @Valid roomUpdateReqDto: RoomUpdateReqDto
+    ): RspTemplate<String> {
         roomService.roomUpdate(email, roomId, roomUpdateReqDto)
         return RspTemplate(HttpStatus.OK, "토론 방 수정")
     }
