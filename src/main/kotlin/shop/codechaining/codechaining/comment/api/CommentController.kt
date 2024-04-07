@@ -1,5 +1,6 @@
 package shop.codechaining.codechaining.comment.api
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
@@ -19,7 +20,7 @@ class CommentController(
     @PostMapping("/")
     fun commentSave(
         @AuthenticationPrincipal email: String,
-        @RequestBody commentSaveReqDto: CommentSaveReqDto
+        @RequestBody @Valid commentSaveReqDto: CommentSaveReqDto
     ): RspTemplate<CommentResDto> {
         val comment = commentService.commentSave(email, commentSaveReqDto)
         return RspTemplate(HttpStatus.CREATED, "댓글 작성", comment)
@@ -35,7 +36,7 @@ class CommentController(
     fun commentUpdate(
         @AuthenticationPrincipal email: String,
         @PathVariable commentId: Long,
-        @RequestBody commentUpdateReqDto: CommentUpdateReqDto
+        @RequestBody @Valid commentUpdateReqDto: CommentUpdateReqDto
     ): RspTemplate<String> {
         commentService.commentUpdate(email, commentId, commentUpdateReqDto)
         return RspTemplate(HttpStatus.OK, "댓글 수정")
