@@ -6,4 +6,6 @@ import shop.codechaining.codechaining.room.domain.Room
 
 interface RoomRepository : JpaRepository<Room, Long> {
     fun findAllByMember(member: Member): List<Room>
+    fun findAllByMemberOrderByRoomIdDesc(member: Member): List<Room>
+    fun findAllByOrderByRoomIdDesc(): List<Room>
 }

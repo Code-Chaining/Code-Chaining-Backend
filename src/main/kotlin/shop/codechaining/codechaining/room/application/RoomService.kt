@@ -55,7 +55,7 @@ class RoomService(
 
     fun myRooms(email: String): MyRoomsResDto {
         val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
-        val myRoomList = roomRepository.findAllByMember(member)
+        val myRoomList = roomRepository.findAllByMemberOrderByRoomIdDesc(member)
 
         return MyRoomsResDto(myRoomList.map { room: Room ->
             MyRoomResDto(
@@ -67,7 +67,7 @@ class RoomService(
     }
 
     fun publicRooms(): PublicRoomsResDto {
-        val publicRoomList = roomRepository.findAll()
+        val publicRoomList = roomRepository.findAllByOrderByRoomIdDesc()
 
         return PublicRoomsResDto(publicRoomList.map { room: Room ->
             PublicRoomResDto(
