@@ -9,8 +9,8 @@ class UnicodeNotBlankValidator : ConstraintValidator<UnicodeNotBlank, String> {
         if (value == null) {
             return false
         }
-       
-        return !value.matches(".*([\\s\u3164]).*".toRegex())
+
+        return value.matches(".*[^\\s\u3164].*".toRegex())
     }
 
 }
