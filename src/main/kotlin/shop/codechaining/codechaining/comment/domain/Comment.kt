@@ -4,11 +4,12 @@ import jakarta.persistence.*
 import shop.codechaining.codechaining.member.domain.Member
 import shop.codechaining.codechaining.room.domain.Room
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Entity
 class Comment(
     var contents: String,
-    var date: LocalDateTime = LocalDateTime.now(),
+    var date: LocalDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul")),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
