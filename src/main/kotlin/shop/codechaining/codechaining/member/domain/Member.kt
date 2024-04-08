@@ -10,7 +10,7 @@ class Member(
     @Enumerated(EnumType.STRING)
     val role: Role,
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     val memberId: Long? = null
 ) {
