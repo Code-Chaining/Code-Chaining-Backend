@@ -10,7 +10,15 @@ class UnicodeNotBlankValidator : ConstraintValidator<UnicodeNotBlank, String> {
             return false
         }
 
-        return !value.contains('\u3164')
+        if (value.trim().isEmpty()) {
+            return false
+        }
+
+        if (value.contains('\u3164')) {
+            return false
+        }
+
+        return true
     }
 
 }
