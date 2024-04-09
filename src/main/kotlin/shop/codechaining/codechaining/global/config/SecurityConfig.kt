@@ -27,7 +27,7 @@ class SecurityConfig(
             authorizeHttpRequests {
                 authorize("/api/kakao/token", permitAll)
                 authorize("/api/token/access", permitAll)
-                authorize("/api/room/public", permitAll)
+                authorize("/api/room/public/search", permitAll)
                 authorize("/api/room/{roomId}", permitAll)
                 authorize("/api/comment/{roomId}", permitAll)
                 authorize("/**", authenticated)
