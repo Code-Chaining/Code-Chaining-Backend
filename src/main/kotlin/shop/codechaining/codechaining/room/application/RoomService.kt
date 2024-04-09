@@ -66,8 +66,12 @@ class RoomService(
         })
     }
 
-    fun publicRooms(): PublicRoomsResDto {
-        val publicRoomList = roomRepository.findAllByOrderByRoomIdDesc()
+    fun publicRooms(filter: String? = null): PublicRoomsResDto {
+        val publicRoomList = if (!filter.isNullOrEmpty()) {
+            roomRepository.findByTitleContainingIgnoreCaseOrderByRoomIdDesc(filter)
+        } else {
+            roomRepository.findAllByOrderByRoomIdDesc()
+        }
 
         return PublicRoomsResDto(publicRoomList.map { room: Room ->
             PublicRoomResDto(
@@ -79,7 +83,6 @@ class RoomService(
         })
     }
 
-    // 댓글이 있다면 지우기
     @Transactional
     fun deleteMyRoom(email: String, roomId: Long) {
         val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }

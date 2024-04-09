@@ -48,9 +48,9 @@ class RoomController(
         return RspTemplate(HttpStatus.OK, "내 토론 방", myRooms)
     }
 
-    @GetMapping("/public")
-    fun publicRooms(): RspTemplate<PublicRoomsResDto> {
-        val publicRooms = roomService.publicRooms()
+    @GetMapping("/public/search")
+    fun publicRooms(@RequestParam filter: String): RspTemplate<PublicRoomsResDto> {
+        val publicRooms = roomService.publicRooms(filter)
         return RspTemplate(HttpStatus.OK, "공개 토론 방", publicRooms)
     }
 
