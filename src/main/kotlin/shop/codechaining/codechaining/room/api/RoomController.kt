@@ -76,7 +76,7 @@ class RoomController(
         return RspTemplate(HttpStatus.OK, "토론 방 스크랩")
     }
 
-    @DeleteMapping("/scrap")
+    @PostMapping("/scrap/delete")
     fun roomScrapDelete(
         @AuthenticationPrincipal email: String,
         @RequestBody scrapReqDto: ScrapReqDto
