@@ -9,7 +9,8 @@ data class RoomInfoResDto(
     val date: String,
     val memberId: Long,
     val nickname: String,
-    val picture: String
+    val picture: String,
+    val isScrap: Boolean
 ) {
     companion object {
         private val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
@@ -20,10 +21,11 @@ data class RoomInfoResDto(
             date: LocalDateTime,
             memberId: Long,
             nickname: String,
-            picture: String
+            picture: String,
+            isScrap: Boolean
         ): RoomInfoResDto {
             val formattedDate = date.format(formatter)
-            return RoomInfoResDto(title, codeAndContents, formattedDate, memberId, nickname, picture)
+            return RoomInfoResDto(title, codeAndContents, formattedDate, memberId, nickname, picture, isScrap)
         }
     }
 }
