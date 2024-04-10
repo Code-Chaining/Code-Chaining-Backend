@@ -24,7 +24,7 @@ class CommentService(
 ) {
     @Transactional
     fun commentSave(email: String, commentSaveReqDto: CommentSaveReqDto): CommentResDto {
-        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
+        val member = memberRepository.findByEmail(email) ?: throw MemberNotFoundException()
         val room = roomRepository.findById(commentSaveReqDto.roomId).orElseThrow { RoomNotFoundException() }
 
         val comment = commentRepository.save(Comment(commentSaveReqDto.contents, writer = member, room = room))
@@ -56,7 +56,7 @@ class CommentService(
 
     @Transactional
     fun commentUpdate(email: String, commentId: Long, commentUpdateReqDto: CommentUpdateReqDto) {
-        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
+        val member = memberRepository.findByEmail(email) ?: throw MemberNotFoundException()
         val comment = commentRepository.findById(commentId).orElseThrow { CommentNotFoundException() }
 
         if (comment.writer.memberId != member.memberId) {
@@ -68,7 +68,7 @@ class CommentService(
 
     @Transactional
     fun commentDelete(email: String, commentId: Long) {
-        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
+        val member = memberRepository.findByEmail(email) ?: throw MemberNotFoundException()
         val comment = commentRepository.findById(commentId).orElseThrow { CommentNotFoundException() }
 
         if (comment.writer.memberId != member.memberId) {
