@@ -12,9 +12,8 @@ class MemberService(
     private val memberRepository: MemberRepository
 ) {
     fun memberInfo(email: String): MemberInfoResDto? {
-        val member = memberRepository.findByEmail(email).orElseThrow { MemberNotFoundException() }
+        val member = memberRepository.findByEmail(email) ?: throw MemberNotFoundException()
 
         return member.memberId?.let { MemberInfoResDto(it, member.email, member.nickname, member.picture) }
     }
-
 }

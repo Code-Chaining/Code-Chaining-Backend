@@ -16,7 +16,7 @@ class AuthMemberService(
 
     @Transactional
     fun saveUserInfo(userInfo: UserInfo): MemberLoginResDto {
-        val member = memberRepository.findByEmail(userInfo.email).orElseGet { createMember(userInfo) }
+        val member = memberRepository.findByEmail(userInfo.email) ?: createMember(userInfo)
 
         return MemberLoginResDto(member)
     }
