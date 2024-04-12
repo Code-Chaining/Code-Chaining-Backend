@@ -1,5 +1,6 @@
 package shop.codechaining.codechaining.auth.api
 
+import jakarta.servlet.http.Cookie
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -26,6 +27,8 @@ class AuthController(
         val getMemberDto = authMemberService.saveUserInfo(userInfo)
         val getToken = tokenService.getToken(getMemberDto)
 
+//        val responseCookie = ResponseCookie.from("accessToken", getToken.accessToken)
+        
         return RspTemplate(HttpStatus.OK, "토큰 발급", getToken)
     }
 

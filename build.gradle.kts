@@ -39,7 +39,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // security, jwt
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+//    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")

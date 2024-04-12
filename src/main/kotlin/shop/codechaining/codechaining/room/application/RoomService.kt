@@ -125,6 +125,7 @@ class RoomService(
             throw NotRoomOwnerException()
         }
 
+        memberSaveRoomRepository.deleteAll(memberSaveRoomRepository.findAllByRoom(room))
         commentRepository.deleteAllByRoom(room)
         roomRepository.delete(room)
     }
