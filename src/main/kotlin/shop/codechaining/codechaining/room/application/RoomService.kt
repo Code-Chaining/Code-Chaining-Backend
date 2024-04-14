@@ -64,38 +64,42 @@ class RoomService(
         }
     }
 
-    fun myRooms(email: String): MyRoomsResDto {
-        val member = memberRepository.findByEmail(email) ?: throw MemberNotFoundException()
-        val myRoomList = roomRepository.findAllByMemberOrderByRoomIdDesc(member)
+    fun myRooms(email: String?): MyRoomsResDto? {
+        val member = email?.let { memberRepository.findByEmail(email) ?: throw MemberNotFoundException() }
+        val myRoomList = member?.let { roomRepository.findAllByMemberOrderByRoomIdDesc(it) }
 
-        return MyRoomsResDto(myRoomList.map { room: Room ->
-            val isScrap = memberSaveRoomRepository.existsByMemberAndRoom(member, room)
-            MyRoomResDto(
-                room.roomId,
-                room.title,
-                commentRepository.countByRoom(room),
-                isScrap
-            )
-        })
+        return myRoomList?.let {
+            MyRoomsResDto(it.map { room: Room ->
+                val isScrap = memberSaveRoomRepository.existsByMemberAndRoom(member, room)
+                MyRoomResDto(
+                    room.roomId,
+                    room.title,
+                    commentRepository.countByRoom(room),
+                    isScrap
+                )
+            })
+        }
     }
 
-    fun myScrapRooms(email: String): PublicRoomsResDto {
-        val member = memberRepository.findByEmail(email) ?: throw MemberNotFoundException()
-        val memberSaveRoomList = memberSaveRoomRepository.findAllByMember(member)
+    fun myScrapRooms(email: String?): PublicRoomsResDto? {
+        val member = email?.let { memberRepository.findByEmail(email) ?: throw MemberNotFoundException() }
+        val memberSaveRoomList = member?.let { memberSaveRoomRepository.findAllByMember(member) }
 
-        return PublicRoomsResDto(memberSaveRoomList.map { memberSaveRoom: MemberSaveRoom ->
-            val isScrap = memberSaveRoomRepository.existsByMemberAndRoom(member, memberSaveRoom.room)
-            PublicRoomResDto(
-                memberSaveRoom.room.roomId,
-                memberSaveRoom.room.title,
-                memberSaveRoom.room.member.nickname,
-                commentRepository.countByRoom(memberSaveRoom.room),
-                isScrap
-            )
-        })
+        return memberSaveRoomList?.let {
+            PublicRoomsResDto(it.map { memberSaveRoom: MemberSaveRoom ->
+                val isScrap = memberSaveRoomRepository.existsByMemberAndRoom(member, memberSaveRoom.room)
+                PublicRoomResDto(
+                    memberSaveRoom.room.roomId,
+                    memberSaveRoom.room.title,
+                    memberSaveRoom.room.member.nickname,
+                    commentRepository.countByRoom(memberSaveRoom.room),
+                    isScrap
+                )
+            })
+        }
     }
 
-    fun publicRooms(email: String?, filter: String? = null): PublicRoomsResDto {
+    fun publicRooms(email: String?, filter: String?): PublicRoomsResDto {
         val publicRoomList = if (!filter.isNullOrEmpty()) {
             roomRepository.findByTitleContainingIgnoreCaseOrderByRoomIdDesc(filter)
         } else {

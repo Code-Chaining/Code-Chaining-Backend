@@ -2,8 +2,9 @@ package shop.codechaining.codechaining.room.api
 
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import shop.codechaining.codechaining.global.annotation.AuthenticatedEmail
+import shop.codechaining.codechaining.global.annotation.WithAuthentication
 import shop.codechaining.codechaining.global.template.RspTemplate
 import shop.codechaining.codechaining.room.api.request.RoomSaveReqDto
 import shop.codechaining.codechaining.room.api.request.RoomUpdateReqDto
@@ -19,8 +20,9 @@ class RoomController(
     private val roomService: RoomService
 ) {
     @PostMapping("/")
+    @WithAuthentication
     fun roomSave(
-        @AuthenticationPrincipal email: String,
+        @AuthenticatedEmail email: String,
         @RequestBody @Valid roomSaveReqDto: RoomSaveReqDto
     ): RspTemplate<String> {
         roomService.roomSave(email, roomSaveReqDto)
@@ -28,8 +30,9 @@ class RoomController(
     }
 
     @PutMapping("/{roomId}")
+    @WithAuthentication
     fun roomUpdate(
-        @AuthenticationPrincipal email: String,
+        @AuthenticatedEmail email: String,
         @PathVariable roomId: Long,
         @RequestBody @Valid roomUpdateReqDto: RoomUpdateReqDto
     ): RspTemplate<String> {
@@ -38,26 +41,30 @@ class RoomController(
     }
 
     @GetMapping("/{roomId}")
-    fun roomInfo(@AuthenticationPrincipal email: String, @PathVariable roomId: Long): RspTemplate<RoomInfoResDto> {
+    @WithAuthentication
+    fun roomInfo(@AuthenticatedEmail email: String?, @PathVariable roomId: Long): RspTemplate<RoomInfoResDto> {
         val roomInfo = roomService.roomInfo(email, roomId)
         return RspTemplate(HttpStatus.OK, "토론 방 정보", roomInfo)
     }
 
     @GetMapping("/my")
-    fun myRooms(@AuthenticationPrincipal email: String): RspTemplate<MyRoomsResDto> {
+    @WithAuthentication
+    fun myRooms(@AuthenticatedEmail email: String?): RspTemplate<MyRoomsResDto> {
         val myRooms = roomService.myRooms(email)
         return RspTemplate(HttpStatus.OK, "내 토론 방", myRooms)
     }
 
     @GetMapping("/my/scrap")
-    fun myScrapRooms(@AuthenticationPrincipal email: String): RspTemplate<PublicRoomsResDto> {
+    @WithAuthentication
+    fun myScrapRooms(@AuthenticatedEmail email: String?): RspTemplate<PublicRoomsResDto> {
         val myScrapRooms = roomService.myScrapRooms(email)
         return RspTemplate(HttpStatus.OK, "내가 스크랩한 토론 방", myScrapRooms)
     }
 
     @GetMapping("/public/search")
+    @WithAuthentication
     fun publicRooms(
-        @AuthenticationPrincipal email: String,
+        @AuthenticatedEmail email: String?,
         @RequestParam filter: String
     ): RspTemplate<PublicRoomsResDto> {
         val publicRooms = roomService.publicRooms(email, filter)
@@ -65,20 +72,29 @@ class RoomController(
     }
 
     @DeleteMapping("/{roomId}")
-    fun roomDelete(@AuthenticationPrincipal email: String, @PathVariable roomId: Long): RspTemplate<String> {
+    @WithAuthentication
+    fun roomDelete(
+        @AuthenticatedEmail email: String,
+        @PathVariable roomId: Long
+    ): RspTemplate<String> {
         roomService.deleteMyRoom(email, roomId)
         return RspTemplate(HttpStatus.OK, "토론 방 삭제")
     }
 
     @PostMapping("/scrap")
-    fun roomScrap(@AuthenticationPrincipal email: String, @RequestBody scrapReqDto: ScrapReqDto): RspTemplate<String> {
+    @WithAuthentication
+    fun roomScrap(
+        @AuthenticatedEmail email: String,
+        @RequestBody scrapReqDto: ScrapReqDto
+    ): RspTemplate<String> {
         roomService.roomScrap(email, scrapReqDto)
         return RspTemplate(HttpStatus.OK, "토론 방 스크랩")
     }
 
     @PostMapping("/scrap/delete")
+    @WithAuthentication
     fun roomScrapDelete(
-        @AuthenticationPrincipal email: String,
+        @AuthenticatedEmail email: String,
         @RequestBody scrapReqDto: ScrapReqDto
     ): RspTemplate<String> {
         roomService.roomScrapDelete(email, scrapReqDto)

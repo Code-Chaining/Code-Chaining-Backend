@@ -1,40 +1,33 @@
 package shop.codechaining.codechaining.global.jwt
 
 import jakarta.servlet.FilterChain
-import jakarta.servlet.ServletException
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.stereotype.Component
-import org.springframework.web.filter.OncePerRequestFilter
-import java.io.IOException
+import org.springframework.web.filter.GenericFilterBean
+import shop.codechaining.codechaining.global.util.JwtAuthConstants.AUTHENTICATION_ATTRIBUTE
+import shop.codechaining.codechaining.global.util.JwtAuthConstants.AUTHORIZATION_HEADER
+import shop.codechaining.codechaining.global.util.JwtAuthConstants.BEARER_PREFIX
 
-@Component
 class JwtAuthorizationFilter(
     private val tokenProvider: TokenProvider
-) : OncePerRequestFilter() {
+) : GenericFilterBean() {
 
-    companion object {
-        private const val AUTHORIZATION_HEADER = "Authorization"
-        private const val BEARER_PREFIX = "Bearer "
-    }
+    override fun doFilter(servletRequest: ServletRequest?, servletResponse: ServletResponse?, chain: FilterChain) {
+        val request = servletRequest as? HttpServletRequest ?: return
+        val response = servletResponse as? HttpServletResponse ?: return
 
-    @Throws(ServletException::class, IOException::class)
-    override fun doFilterInternal(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain
-    ) {
         request.getHeader(AUTHORIZATION_HEADER)?.let { header ->
             if (header.startsWith(BEARER_PREFIX)) {
-                header.removePrefix(BEARER_PREFIX).takeIf { tokenProvider.validateToken(it) }?.let { token ->
-                    tokenProvider.getAuthentication(token).also { authentication ->
-                        SecurityContextHolder.getContext().authentication = authentication
-                    }
+                val token = header.removePrefix(BEARER_PREFIX)
+                if (tokenProvider.validateToken(token)) {
+                    val authentication = tokenProvider.getAuthenticationEmail(token)
+                    request.setAttribute(AUTHENTICATION_ATTRIBUTE, authentication)
                 }
             }
         }
 
-        filterChain.doFilter(request, response)
+        chain.doFilter(request, response)
     }
 }

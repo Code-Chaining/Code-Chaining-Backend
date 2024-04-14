@@ -1,5 +1,6 @@
 package shop.codechaining.codechaining.global.jwt
 
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
@@ -7,15 +8,14 @@ import io.jsonwebtoken.security.Keys
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import shop.codechaining.codechaining.global.jwt.api.dto.TokenDto
 import java.security.Key
+import java.security.SignatureException
 import java.util.*
 
 @Component
-class TokenProvider() {
+class TokenProvider {
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Value("\${token.expire.time.access}")
@@ -31,19 +31,26 @@ class TokenProvider() {
 
     @PostConstruct
     fun init() {
-        val keyBytes = Decoders.BASE64URL.decode(secret)
-        key = Keys.hmacShaKeyFor(keyBytes)
+        key = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secret))
     }
 
-    fun validateToken(token: String): Boolean = try {
-        Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-        true
-    } catch (e: Exception) {
-        log.error("JWT validation fails: ${e.message}")
-        false
+    fun validateToken(token: String): Boolean {
+        try {
+            Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+            return true
+        } catch (e: ExpiredJwtException) {
+            log.error("JWT is expired: ${e.message}")
+            return false
+        } catch (e: SignatureException) {
+            log.error("JWT signature does not match: ${e.message}")
+            return false
+        } catch (e: Exception) {
+            log.error("JWT validation fails: ${e.message}")
+            return false
+        }
     }
 
     fun generateToken(email: String): TokenDto {
@@ -81,16 +88,14 @@ class TokenProvider() {
             .compact()
     }
 
-    fun getAuthentication(token: String): Authentication {
+    fun getAuthenticationEmail(token: String): String {
         val claims = Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
             .parseClaimsJws(token)
             .body
 
-        val email = claims.subject
-
-        return UsernamePasswordAuthenticationToken(email, null, emptyList())
+        return claims.subject
     }
 
 }
