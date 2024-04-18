@@ -9,4 +9,5 @@ interface MemberSaveRoomRepository : JpaRepository<MemberSaveRoom, Long> {
     fun findByMemberAndRoom(member: Member, room: Room): MemberSaveRoom?
     fun existsByMemberAndRoom(member: Member, room: Room): Boolean
     fun findAllByMember(member: Member): List<MemberSaveRoom>
+    fun findAllByRoom(room: Room): List<MemberSaveRoom>
 }
