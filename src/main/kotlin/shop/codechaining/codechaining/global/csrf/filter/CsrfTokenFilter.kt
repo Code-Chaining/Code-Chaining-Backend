@@ -13,7 +13,7 @@ class CsrfTokenFilter : GenericFilterBean() {
         val response = servletResponse as? HttpServletResponse ?: return
         if (request.method in setOf("POST", "PUT", "DELETE")) {
             val requestHeaderCsrfToken = request.getHeader("X-CSRF-TOKEN")
-            val cookieCsrfToken = request.cookies?.find { it.name == "CSRF_TOKEN" }?.value
+            val cookieCsrfToken = request.cookies?.firstOrNull { it.name == "CSRF-TOKEN" }?.value
 
             if (requestHeaderCsrfToken == null && cookieCsrfToken == null) {
                 throw RuntimeException("CSRF 토큰이 누락되었습니다.")

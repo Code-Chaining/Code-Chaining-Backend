@@ -43,13 +43,13 @@ class TokenProvider {
             return true
         } catch (e: ExpiredJwtException) {
             log.error("JWT is expired: ${e.message}")
-            return false
+            throw e
         } catch (e: SignatureException) {
             log.error("JWT signature does not match: ${e.message}")
-            return false
+            throw e
         } catch (e: Exception) {
             log.error("JWT validation fails: ${e.message}")
-            return false
+            throw e
         }
     }
 

@@ -1,5 +1,6 @@
 package shop.codechaining.codechaining.global.jwt
 
+import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
@@ -18,16 +19,21 @@ class JwtAuthorizationFilter(
         val request = servletRequest as? HttpServletRequest ?: return
         val response = servletResponse as? HttpServletResponse ?: return
 
-        request.getHeader(AUTHORIZATION_HEADER)?.let { header ->
-            if (header.startsWith(BEARER_PREFIX)) {
-                val token = header.removePrefix(BEARER_PREFIX)
-                if (tokenProvider.validateToken(token)) {
-                    val authentication = tokenProvider.getAuthenticationEmail(token)
-                    request.setAttribute(AUTHENTICATION_ATTRIBUTE, authentication)
+        try {
+            request.getHeader(AUTHORIZATION_HEADER)?.let { header ->
+                if (header.startsWith(BEARER_PREFIX)) {
+                    val token = header.removePrefix(BEARER_PREFIX)
+                    if (tokenProvider.validateToken(token)) {
+                        val authentication = tokenProvider.getAuthenticationEmail(token)
+                        request.setAttribute(AUTHENTICATION_ATTRIBUTE, authentication)
+                    }
                 }
             }
-        }
 
-        chain.doFilter(request, response)
+            chain.doFilter(request, response)
+        } catch (e: ExpiredJwtException) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "accessToken이 만료되었습니다.")
+            return
+        }
     }
 }

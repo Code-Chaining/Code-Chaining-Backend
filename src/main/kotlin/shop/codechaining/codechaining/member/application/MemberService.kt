@@ -11,9 +11,9 @@ import shop.codechaining.codechaining.member.exception.MemberNotFoundException
 class MemberService(
     private val memberRepository: MemberRepository
 ) {
-    fun memberInfo(email: String): MemberInfoResDto? {
-        val member = memberRepository.findByEmail(email) ?: throw MemberNotFoundException()
+    fun memberInfo(email: String?): MemberInfoResDto? {
+        val member = email?.let { memberRepository.findByEmail(it) ?: throw MemberNotFoundException() }
 
-        return member.memberId?.let { MemberInfoResDto(it, member.email, member.nickname, member.picture) }
+        return member?.memberId?.let { MemberInfoResDto(it, member.email, member.nickname, member.picture) }
     }
 }
