@@ -6,6 +6,7 @@ import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.filter.GenericFilterBean
+import shop.codechaining.codechaining.global.util.CookieUtils
 
 class CsrfTokenFilter : GenericFilterBean() {
     override fun doFilter(servletRequest: ServletRequest?, servletResponse: ServletResponse?, chain: FilterChain) {
@@ -13,7 +14,7 @@ class CsrfTokenFilter : GenericFilterBean() {
         val response = servletResponse as? HttpServletResponse ?: return
         if (request.method in setOf("POST", "PUT", "DELETE")) {
             val requestHeaderCsrfToken = request.getHeader("X-CSRF-TOKEN")
-            val cookieCsrfToken = request.cookies?.firstOrNull { it.name == "CSRF-TOKEN" }?.value
+            val cookieCsrfToken = CookieUtils.getCookie(request, "CSRF-TOKEN")?.value
 
             if (requestHeaderCsrfToken == null && cookieCsrfToken == null) {
                 throw RuntimeException("CSRF 토큰이 누락되었습니다.")
