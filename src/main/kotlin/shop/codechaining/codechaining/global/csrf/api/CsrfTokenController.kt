@@ -12,13 +12,15 @@ import shop.codechaining.codechaining.global.template.RspTemplate
 
 @RestController
 @RequestMapping("/api")
-class CsrfTokenController {
+class CsrfTokenController(
+    private val csrfTokenService: CsrfTokenService
+) {
 
     @GetMapping("/csrf-token")
     fun getCsrfToken(
         response: HttpServletResponse,
     ): RspTemplate<String> {
-        val csrfToken = CsrfTokenService.createCsrfToken(response)
+        val csrfToken = csrfTokenService.createCsrfToken(response)
         return RspTemplate(HttpStatus.OK, data = csrfToken)
     }
 
@@ -27,7 +29,7 @@ class CsrfTokenController {
         request: HttpServletRequest,
         response: HttpServletResponse
     ): RspTemplate<Void> {
-        CsrfTokenService.deleteCookie(request, response)
+        csrfTokenService.deleteCookie(request, response)
         return RspTemplate(HttpStatus.OK, "로그아웃")
     }
 }

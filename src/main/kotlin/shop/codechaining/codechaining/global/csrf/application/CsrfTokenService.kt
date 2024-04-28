@@ -7,8 +7,10 @@ import shop.codechaining.codechaining.global.util.CookieUtils
 import java.util.*
 
 @Service
-object CsrfTokenService {
-    private const val CSRF_TOKEN_SESSION_ATTR: String = "CSRF-TOKEN"
+class CsrfTokenService {
+    companion object {
+        private const val CSRF_TOKEN_SESSION_ATTR: String = "CSRF-TOKEN"
+    }
 
     fun createCsrfToken(response: HttpServletResponse): String {
         val csrfToken = UUID.randomUUID().toString()
